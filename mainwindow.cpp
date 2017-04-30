@@ -259,6 +259,7 @@ void MainWindow::on_lineEdit_quelle_editingFinished()
     }else
     {
         verzeichnis_quelle = eingabe;
+        schreibe_ini();
     }
 }
 
@@ -272,6 +273,7 @@ void MainWindow::on_lineEdit_ziel_editingFinished()
     }else
     {
         verzeichnis_ziel = eingabe;
+        schreibe_ini();
     }
 }
 
@@ -285,6 +287,7 @@ void MainWindow::on_lineEdit_root_editingFinished()
     }else
     {
         verzeichnis_root = eingabe;
+        schreibe_ini();
     }
 }
 
@@ -298,6 +301,7 @@ void MainWindow::on_lineEdit_auftraege_an_pios_editingFinished()
     }else
     {
         verzeichnis_auftraege_an_pios = eingabe;
+        schreibe_ini();
     }
 }
 
@@ -311,6 +315,7 @@ void MainWindow::on_lineEdit_soptidat_editingFinished()
     }else
     {
         verzeichnis_soptidat = eingabe;
+        schreibe_ini();
     }
 }
 
