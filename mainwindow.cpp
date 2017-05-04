@@ -49,6 +49,9 @@ void MainWindow::setup()
             file.write("verzeichnis_root:");
             file.write("\n");
 
+            file.write("verzeichnis_root2:");
+            file.write("\n");
+
             file.write("verzeichnis_auftraege_an_pios:");
             file.write("\n");
 
@@ -100,6 +103,10 @@ void MainWindow::setup()
                 {
                     verzeichnis_root = text_mitte(zeile, "verzeichnis_root:", "\n");
                     ui->lineEdit_root->setText(verzeichnis_root);
+                }else if(zeile.contains("verzeichnis_root2:"))
+                {
+                    verzeichnis_root2 = text_mitte(zeile, "verzeichnis_root2:", "\n");
+                    ui->lineEdit_root2->setText(verzeichnis_root2);
                 }else if(zeile.contains("verzeichnis_auftraege_an_pios:"))
                 {
                     verzeichnis_auftraege_an_pios = text_mitte(zeile, "verzeichnis_auftraege_an_pios:", "\n") ;
@@ -137,6 +144,16 @@ void MainWindow::setup()
                     }else
                     {
                         ui->checkBox_unterordner_erstellen_cnc->setChecked(false);
+                    }
+                }else if(zeile.contains("unterordner_erstellen_cnc2:"))
+                {
+                    unterordner_erstellen_cnc2 = text_mitte(zeile, "unterordner_erstellen_cnc2:", "\n");
+                    if(unterordner_erstellen_cnc2 == "ja")
+                    {
+                        ui->checkBox_unterordner_erstellen_cnc2->setChecked(true);
+                    }else
+                    {
+                        ui->checkBox_unterordner_erstellen_cnc2->setChecked(false);
                     }
                 }else if(zeile.contains("unterordner_erstellen_soptidat:"))
                 {
@@ -190,6 +207,10 @@ void MainWindow::schreibe_ini()
         file.write(verzeichnis_root.toUtf8());
         file.write("\n");
 
+        file.write("verzeichnis_root2:");
+        file.write(verzeichnis_root2.toUtf8());
+        file.write("\n");
+
         file.write("verzeichnis_auftraege_an_pios:");
         file.write(verzeichnis_auftraege_an_pios.toUtf8());
         file.write("\n");
@@ -212,6 +233,10 @@ void MainWindow::schreibe_ini()
 
         file.write("unterordner_erstellen_cnc:");
         file.write(unterordner_erstellen_cnc.toUtf8());
+        file.write("\n");
+
+        file.write("unterordner_erstellen_cnc2:");
+        file.write(unterordner_erstellen_cnc2.toUtf8());
         file.write("\n");
 
         file.write("unterordner_erstellen_soptidat:");
@@ -259,7 +284,6 @@ void MainWindow::on_lineEdit_quelle_editingFinished()
     }else
     {
         verzeichnis_quelle = eingabe;
-        schreibe_ini();
     }
 }
 
@@ -273,7 +297,6 @@ void MainWindow::on_lineEdit_ziel_editingFinished()
     }else
     {
         verzeichnis_ziel = eingabe;
-        schreibe_ini();
     }
 }
 
@@ -287,7 +310,19 @@ void MainWindow::on_lineEdit_root_editingFinished()
     }else
     {
         verzeichnis_root = eingabe;
-        schreibe_ini();
+    }
+}
+
+void MainWindow::on_lineEdit_root2_editingFinished()
+{
+    QString eingabe = ui->lineEdit_root2->text();
+    if(!QDir(eingabe).exists())
+    {
+        QMessageBox::warning(this,"Fehler","Verzeichniss \"" + eingabe + "\" nicht gefunden!",QMessageBox::Ok);
+        ui->lineEdit_root2->setText(verzeichnis_root2);
+    }else
+    {
+        verzeichnis_root2 = eingabe;
     }
 }
 
@@ -301,7 +336,6 @@ void MainWindow::on_lineEdit_auftraege_an_pios_editingFinished()
     }else
     {
         verzeichnis_auftraege_an_pios = eingabe;
-        schreibe_ini();
     }
 }
 
@@ -315,7 +349,6 @@ void MainWindow::on_lineEdit_soptidat_editingFinished()
     }else
     {
         verzeichnis_soptidat = eingabe;
-        schreibe_ini();
     }
 }
 
@@ -361,6 +394,21 @@ void MainWindow::on_pushButton_root_clicked()
     {
         verzeichnis_root = tmp;
         ui->lineEdit_root->setText(verzeichnis_root);
+        schreibe_ini();
+    }
+}
+
+void MainWindow::on_pushButton_root2_clicked()
+{
+    if(verzeichnis_root2.isEmpty())
+    {
+        verzeichnis_root2 = "./";
+    }
+    QString tmp = QFileDialog::getExistingDirectory(this, tr("Quellverzeichniss"), verzeichnis_root2);
+    if(!tmp.isEmpty())
+    {
+        verzeichnis_root2 = tmp;
+        ui->lineEdit_root2->setText(verzeichnis_root2);
         schreibe_ini();
     }
 }
@@ -651,6 +699,37 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
                 }
             }
 
+            //Ordner für CNC 2 anlegen:
+            if(unterordner_erstellen_cnc2 == "ja")
+            {
+                if(!verzeichnis_root2.isEmpty())
+                {
+                    char tz;
+                    if(QDir::separator() == '/')
+                    {
+                        tz = '/';   //LINUX
+                    }else
+                    {
+                        tz = '\\';  //Windows
+                    }
+                    text_zeilenweise p;
+                    p.set_trennzeichen(tz);
+                    p.set_text(barcode);
+                    QString pfad;
+                    for(uint x = 1; x<p.zeilenanzahl() ;x++)
+                    {
+                        pfad += p.zeile(x);
+                        if(x<p.zeilenanzahl()-1)
+                        {
+                            pfad += QDir::separator();
+                        }
+                    }
+
+                    QDir cncdir;
+                    cncdir.mkpath(verzeichnis_root2 + QDir::separator() + pfad);
+                }
+            }
+
             //Ordner in SOptiDat anlegen:
             if(unterordner_erstellen_soptidat == "ja")
             {
@@ -726,6 +805,18 @@ void MainWindow::on_checkBox_unterordner_erstellen_cnc_stateChanged()
     }else
     {
         unterordner_erstellen_cnc = "nein";
+    }
+    schreibe_ini();
+}
+
+void MainWindow::on_checkBox_unterordner_erstellen_cnc2_stateChanged()
+{
+    if(ui->checkBox_unterordner_erstellen_cnc2->isChecked() == true)
+    {
+        unterordner_erstellen_cnc2 = "ja";
+    }else
+    {
+        unterordner_erstellen_cnc2 = "nein";
     }
     schreibe_ini();
 }
@@ -850,7 +941,7 @@ QString MainWindow::text_mitte(const QString text, const QString textDavor, cons
 void MainWindow::slot_anfrage_pfade()
 {
     connect(this, SIGNAL(signal_pfade(QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString)));
-    emit signal_pfade(verzeichnis_root, verzeichnis_auftraege_an_pios, verzeichnis_soptidat);
+    emit signal_pfade(verzeichnis_root, verzeichnis_root2, verzeichnis_auftraege_an_pios, verzeichnis_soptidat);
 }
 
 void MainWindow::slot_info(QString infotext)
@@ -879,3 +970,9 @@ void MainWindow::on_actionLeere_Unterordner_entfernen_triggered()
 {
     dia_leer_Ordn_entf.show();
 }
+
+
+
+
+
+

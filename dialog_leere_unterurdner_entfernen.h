@@ -22,7 +22,7 @@ public:
     ~Dialog_leere_unterurdner_entfernen();
 
 public slots:
-    void slot_pfade(QString cnc, QString pios, QString sopti);
+    void slot_pfade(QString cnc, QString cnc2, QString pios, QString sopti);
 
 private slots:
     void on_pushButton_anderer_pfad_clicked();
