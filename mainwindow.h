@@ -50,19 +50,22 @@ private slots:
     void on_radioButton_csv_to_zielverz_toggled(bool checked);
     void on_radioButton_csv_to_an_pios_toggled(bool checked);
     void on_actionLeere_Unterordner_entfernen_triggered();
+    void on_lineEdit_root2_editingFinished();
+    void on_pushButton_root2_clicked();
+    void on_checkBox_unterordner_erstellen_cnc2_stateChanged();
 
 private:
     Ui::MainWindow *ui;
     QString tz; //Trennzeichen für Pfade (Linux '/'  Windows '\')
 
     //Pfade:
-    QString verzeichnis_quelle, verzeichnis_ziel, verzeichnis_root;
+    QString verzeichnis_quelle, verzeichnis_ziel, verzeichnis_root, verzeichnis_root2;
     QString verzeichnis_auftraege_an_pios, verzeichnis_soptidat;
     QString pfad_an_pios;//Dient der temporären Speicherung des Pfades in der Funktion "barcode_to_csv" an die Funktion ""on_pushButton_Barcode_erzeugen_clicked
 
     //Checkboxen:
     QString quelldateien_erhalten, barcode_erzeugen;
-    QString unterordner_erstellen_cnc, unterordner_erstellen_soptidat;
+    QString unterordner_erstellen_cnc, unterordner_erstellen_cnc2, unterordner_erstellen_soptidat;
 
     //Radio-Buttons:
     QString auswahl_zielverz;
@@ -84,7 +87,7 @@ public slots:
     void slot_info(QString infotext);
 
 signals:
-    void signal_pfade(QString cnc, QString pios, QString sopti);
+    void signal_pfade(QString cnc, QString cnc2, QString pios, QString sopti);
 };
 
 #endif // MAINWINDOW_H

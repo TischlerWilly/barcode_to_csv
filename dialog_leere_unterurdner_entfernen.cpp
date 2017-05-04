@@ -45,7 +45,7 @@ void Dialog_leere_unterurdner_entfernen::on_pushButton_start_clicked()
     emit sig_anfrage_pfade();
 }
 
-void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString pios, QString sopti)
+void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString cnc2, QString pios, QString sopti)
 {
     info = "";
     if(ui->checkBox_cnc->isChecked())
@@ -56,7 +56,20 @@ void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString pios, Q
             info += "\n";
         }else
         {
-            info += "CNC-Wurzelverzeichnis-Pfad ungueltig!";
+            info += "Ganner CNC-Wurzelverzeichnis-Pfad ungueltig!";
+            info += "\n";
+        }
+
+    }
+    if(ui->checkBox_cnc2->isChecked())
+    {
+        if(QDir(cnc2).exists())
+        {
+            info += leere_unterordner_entfernen(cnc2);
+            info += "\n";
+        }else
+        {
+            info += "IMA CNC-Wurzelverzeichnis-Pfad ungueltig!";
             info += "\n";
         }
 
