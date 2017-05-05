@@ -250,7 +250,7 @@ void MainWindow::schreibe_ini()
 void MainWindow::on_actionInfo_triggered()
 {
     QString tmp;
-    tmp = "Barcode to CSV / Version: 2017.04 / Lizenz:  GPL / Autor: Oliver Schuft\n";
+    tmp = "Barcode to CSV / Version: 2017.05 / Lizenz:  GPL / Autor: Oliver Schuft\n";
     tmp += "\n";
     tmp +="WICHTIG: Barcode unterstuetzt die deutschen Umlaute nicht!\n";
     tmp += "\n";
@@ -940,7 +940,7 @@ QString MainWindow::text_mitte(const QString text, const QString textDavor, cons
 //-----------------------------------------------------------------------public solts:
 void MainWindow::slot_anfrage_pfade()
 {
-    connect(this, SIGNAL(signal_pfade(QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString)));
+    connect(this, SIGNAL(signal_pfade(QString, QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString,QString)));
     emit signal_pfade(verzeichnis_root, verzeichnis_root2, verzeichnis_auftraege_an_pios, verzeichnis_soptidat);
 }
 
