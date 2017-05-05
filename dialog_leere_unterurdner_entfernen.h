@@ -32,9 +32,8 @@ private slots:
 private:
     Ui::Dialog_leere_unterurdner_entfernen *ui;
     QString anderer_pfad;
-    QString leere_unterordner_entfernen(QString pfad);
+    int leere_unterordner_entfernen(QString pfad);
 
-    QString info;//soll die Info speichern die dann im Mainwindow angezeigt wird
 
 signals:
     void sig_anfrage_pfade();

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>899</width>
-    <height>582</height>
+    <height>595</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -149,7 +149,7 @@
      <rect>
       <x>11</x>
       <y>221</y>
-      <width>171</width>
+      <width>173</width>
       <height>341</height>
      </rect>
     </property>
@@ -266,9 +266,9 @@
     <property name="geometry">
      <rect>
       <x>38</x>
-      <y>281</y>
+      <y>291</y>
       <width>161</width>
-      <height>81</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -295,7 +295,7 @@
      <x>0</x>
      <y>0</y>
      <width>899</width>
-     <height>18</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuInfo">

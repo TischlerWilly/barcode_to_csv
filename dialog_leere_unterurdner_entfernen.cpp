@@ -47,12 +47,13 @@ void Dialog_leere_unterurdner_entfernen::on_pushButton_start_clicked()
 
 void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString cnc2, QString pios, QString sopti)
 {
-    info = "";
+    QString info = "";
     if(ui->checkBox_cnc->isChecked())
     {
         if(QDir(cnc).exists())
         {
-            info += leere_unterordner_entfernen(cnc);
+            info += int_zu_qstring(leere_unterordner_entfernen(cnc));
+            info += " leere Ordner im CNC-Verzeichnis Ganner entfernt.";
             info += "\n";
         }else
         {
@@ -65,7 +66,8 @@ void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString cnc2, Q
     {
         if(QDir(cnc2).exists())
         {
-            info += leere_unterordner_entfernen(cnc2);
+            info += int_zu_qstring(leere_unterordner_entfernen(cnc2));
+            info += " leere Ordner im CNC-Verzeichnis IMA entfernt.";
             info += "\n";
         }else
         {
@@ -78,7 +80,8 @@ void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString cnc2, Q
     {
         if(QDir(pios).exists())
         {
-            info += leere_unterordner_entfernen(pios);
+            info += int_zu_qstring(leere_unterordner_entfernen(pios));
+            info += " leere Ordner im Auftraege an PIOS-Verzeichnis entfernt.";
             info += "\n";
         }else
         {
@@ -90,7 +93,8 @@ void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString cnc2, Q
     {
         if(QDir(sopti).exists())
         {
-            info += leere_unterordner_entfernen(sopti);
+            info += int_zu_qstring(leere_unterordner_entfernen(sopti));
+            info += " leere Ordner im SOptiDat-Verzeichnis entfernt.";
             info += "\n";
         }else
         {
@@ -102,7 +106,8 @@ void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString cnc2, Q
     {
         if(QDir(anderer_pfad).exists())
         {
-            info += leere_unterordner_entfernen(anderer_pfad);
+            info += int_zu_qstring(leere_unterordner_entfernen(anderer_pfad));
+            info += " leere Ordner im angegebenen Verzeichnis entfernt.";
             info += "\n";
         }else
         {
@@ -110,37 +115,38 @@ void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString cnc2, Q
             info += "\n";
         }
     }
+    this->close();
     emit sig_info(info);
 }
 
-QString Dialog_leere_unterurdner_entfernen::leere_unterordner_entfernen(QString pfad)
+int Dialog_leere_unterurdner_entfernen::leere_unterordner_entfernen(QString pfad)
 {
-    if(!QDir(pfad).exists())
+
+    int zaele_entfernte_Ordner = 0;
+    QDir verzeichnis(pfad);
+    if(!verzeichnis.exists())
     {
-        return "Fehler in Funktion \"leere_unterordner_entfernen\" !\nAngegebener Pfad existiert nicht!\n ("+ pfad + ")";
-    }
-    text_zeilenweise ordner;
-    QDirIterator it(QDir(pfad), QDirIterator::Subdirectories);
-    while (it.hasNext())
+        return 0;
+    }else
     {
-        QString tmp = it.next();
-        ordner.zeile_anhaengen(tmp);
-    }
-    for(uint i=ordner.zeilenanzahl() ; i>0 ; i--)
-    {
-        QDir dir(ordner.zeile(i));
-        if(dir.exists())
+        QStringList list = verzeichnis.entryList();
+        for(int i = 0 ; i<list.count() ; i++)
         {
-            if(  dir.entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries).count() == 0  )//Wenn Verzeichnis leer ist
+            if(  verzeichnis.rmdir(list.at(i))  )
             {
-                if(ordner.zeile(i) != pfad)
+                zaele_entfernte_Ordner++;
+            }else
+            {
+                if(list.at(i)!="."  &&  list.at(i)!="..")
                 {
-                    dir.rmpath(ordner.zeile(i));
+                    zaele_entfernte_Ordner += leere_unterordner_entfernen(pfad + QDir::separator() + list.at(i));
+                }
+                if(  verzeichnis.rmdir(list.at(i))  )   //erneut prüfen. Wenn Verzeichnis jetzt
+                {                                       //leer ist kann es gelöscht werden
+                    zaele_entfernte_Ordner++;
                 }
             }
         }
     }
-    QDir(pfad).mkpath(pfad);//Stammverzeichnis wieder erstellen (wird auch gelöscht, wenn es leer ist)
-    QString retstr = "Im Verzeichnis \"" + pfad + "\" wurden alle leeren Ordner entfernt.";
-    return retstr;
+    return zaele_entfernte_Ordner;
 }
