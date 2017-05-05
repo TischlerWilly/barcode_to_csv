@@ -21,7 +21,8 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     text_zeilenweise.h \
     dialog_leere_unterurdner_entfernen.h \
-    bibiothek_oliver.h
+    bibiothek_oliver.h \
+    todo.h
 
 FORMS    += mainwindow.ui \
     dialog_leere_unterurdner_entfernen.ui

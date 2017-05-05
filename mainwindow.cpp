@@ -845,7 +845,7 @@ void MainWindow::on_checkBox_unterordner_erstellen_soptidat_stateChanged()
     schreibe_ini();
 }
 
-//-----------------------------------------------------------------------Radio-BUttons:
+//-----------------------------------------------------------------------Radio-Buttons:
 void MainWindow::on_radioButton_csv_to_zielverz_toggled(bool checked)
 {
     if(checked == true)
@@ -950,6 +950,7 @@ void MainWindow::slot_info(QString infotext)
     {
         ui->plainTextEdit_Meldungsfenster->setPlainText(infotext);
     }
+    disconnect(this, SIGNAL(signal_pfade(QString, QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString,QString)));
 }
 
 
@@ -969,6 +970,7 @@ void MainWindow::slot_info(QString infotext)
 void MainWindow::on_actionLeere_Unterordner_entfernen_triggered()
 {
     dia_leer_Ordn_entf.show();
+
 }
 
 
