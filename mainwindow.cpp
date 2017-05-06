@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#define VERSIONSNUMMER  "2017.05.06"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -250,7 +252,9 @@ void MainWindow::schreibe_ini()
 void MainWindow::on_actionInfo_triggered()
 {
     QString tmp;
-    tmp = "Barcode to CSV / Version: 2017.05 / Lizenz:  GPL / Autor: Oliver Schuft\n";
+    tmp = "Barcode to CSV / Version:  ";
+    tmp += VERSIONSNUMMER;
+    tmp +=" / Lizenz:  GPL / Autor: Oliver Schuft\n";
     tmp += "\n";
     tmp +="WICHTIG: Barcode unterstuetzt die deutschen Umlaute nicht!\n";
     tmp += "\n";
@@ -471,6 +475,7 @@ void MainWindow::on_pushButton_Dateien_auflisten_clicked()
 
 void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt Start
 {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     if(verzeichnis_quelle.isEmpty())
     {
         QMessageBox::warning(this,"Abbruch","Quellverzeichniss nicht angegeben!",QMessageBox::Ok);
@@ -548,6 +553,7 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
             }
         }
     }
+    QApplication::restoreOverrideCursor();
 }
 
 QString MainWindow::barcode_to_csv(QString alter_inhalt)
@@ -940,6 +946,7 @@ QString MainWindow::text_mitte(const QString text, const QString textDavor, cons
 //-----------------------------------------------------------------------public solts:
 void MainWindow::slot_anfrage_pfade()
 {
+    disconnect(this, SIGNAL(signal_pfade(QString, QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString,QString)));
     connect(this, SIGNAL(signal_pfade(QString, QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString,QString)));
     emit signal_pfade(verzeichnis_root, verzeichnis_root2, verzeichnis_auftraege_an_pios, verzeichnis_soptidat);
 }
@@ -950,7 +957,7 @@ void MainWindow::slot_info(QString infotext)
     {
         ui->plainTextEdit_Meldungsfenster->setPlainText(infotext);
     }
-    disconnect(this, SIGNAL(signal_pfade(QString, QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString,QString)));
+
 }
 
 
