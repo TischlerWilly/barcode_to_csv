@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 #define VERSIONSNUMMER  "2017.05.09"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -611,6 +613,7 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
             ui->plainTextEdit_Meldungsfenster->setPlainText(alter_text + "\n" + "Gesamtliste wurde im Zielverzeichnis gespeichert.");
         }
     }
+
     QApplication::restoreOverrideCursor();
 }
 
