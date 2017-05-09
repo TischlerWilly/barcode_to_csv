@@ -53,6 +53,7 @@ private slots:
     void on_lineEdit_root2_editingFinished();
     void on_pushButton_root2_clicked();
     void on_checkBox_unterordner_erstellen_cnc2_stateChanged();
+    void on_checkBox_gesamtliste_stateChanged();
 
 private:
     Ui::MainWindow *ui;
@@ -66,6 +67,7 @@ private:
     //Checkboxen:
     QString quelldateien_erhalten, barcode_erzeugen;
     QString unterordner_erstellen_cnc, unterordner_erstellen_cnc2, unterordner_erstellen_soptidat;
+    QString gesamtliste_anlegen;
 
     //Radio-Buttons:
     QString auswahl_zielverz;
