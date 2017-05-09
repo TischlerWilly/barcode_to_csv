@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#define VERSIONSNUMMER  "2017.05.09"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -72,6 +74,10 @@ void MainWindow::setup()
 
             ui->checkBox_unterordner_erstellen_soptidat->setChecked(false);
             file.write("unterordner_erstellen_soptidat:nein");
+            file.write("\n");
+
+            ui->checkBox_gesamtliste->setChecked(false);
+            file.write("gesamtliste_anlegen:nein");
             file.write("\n");
 
             ui->radioButton_csv_to_zielverz->setChecked(true);
@@ -165,6 +171,16 @@ void MainWindow::setup()
                     {
                         ui->checkBox_unterordner_erstellen_soptidat->setChecked(false);
                     }
+                }else if(zeile.contains("gesamtliste_anlegen:"))
+                {
+                    gesamtliste_anlegen = text_mitte(zeile, "gesamtliste_anlegen:", "\n");
+                    if(gesamtliste_anlegen == "ja")
+                    {
+                        ui->checkBox_gesamtliste->setChecked(true);
+                    }else
+                    {
+                        ui->checkBox_gesamtliste->setChecked(false);
+                    }
                 }else if(zeile.contains("auswahl_zielverz:"))
                 {
                     auswahl_zielverz = text_mitte(zeile, "auswahl_zielverz:", "\n");
@@ -243,6 +259,10 @@ void MainWindow::schreibe_ini()
         file.write(unterordner_erstellen_soptidat.toUtf8());
         file.write("\n");
 
+        file.write("gesamtliste_anlegen:");
+        file.write(gesamtliste_anlegen.toUtf8());
+        file.write("\n");
+
     }
     file.close();
 }
@@ -250,7 +270,9 @@ void MainWindow::schreibe_ini()
 void MainWindow::on_actionInfo_triggered()
 {
     QString tmp;
-    tmp = "Barcode to CSV / Version: 2017.05 / Lizenz:  GPL / Autor: Oliver Schuft\n";
+    tmp = "Barcode to CSV / Version:  ";
+    tmp += VERSIONSNUMMER;
+    tmp +=" / Lizenz:  GPL / Autor: Oliver Schuft\n";
     tmp += "\n";
     tmp +="WICHTIG: Barcode unterstuetzt die deutschen Umlaute nicht!\n";
     tmp += "\n";
@@ -471,6 +493,7 @@ void MainWindow::on_pushButton_Dateien_auflisten_clicked()
 
 void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt Start
 {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     if(verzeichnis_quelle.isEmpty())
     {
         QMessageBox::warning(this,"Abbruch","Quellverzeichniss nicht angegeben!",QMessageBox::Ok);
@@ -485,6 +508,8 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
     QStringList dateiliste;
     dateiliste = quelle.entryList(QDir::Files);
     ui->plainTextEdit_Meldungsfenster->clear();
+    QString gesamtliste;
+    int i=0;
     for(QStringList::iterator it = dateiliste.begin() ; it!=dateiliste.end() ; ++it)
     {
         QString name = *it;
@@ -506,6 +531,33 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
 
        //Inhalt um Barcode ergänzen:
         QString neuer_inhalt = barcode_to_csv(alter_inhalt);
+
+        if(gesamtliste_anlegen=="ja")
+        {
+            if(i==0)
+            {
+                gesamtliste = neuer_inhalt;
+                i++;
+            }else
+            {
+                text_zeilenweise tz;
+                tz.set_text(neuer_inhalt);
+                for(uint ii = 3 ; ii<=tz.zeilenanzahl() ; ii++)
+                {
+                    gesamtliste += "\n";
+                    gesamtliste += tz.zeile(ii);
+                }
+            }
+            QFile newfile(verzeichnis_ziel + QDir::separator() + "gesamtliste.csv");
+            if(!newfile.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                QMessageBox::warning(this,"Fehler","Fehler beim Dateizugriff!",QMessageBox::Ok);
+            }else
+            {
+                newfile.write(gesamtliste.toUtf8());
+            }
+            newfile.close();
+        }
 
         //Zieldatei speichern:
         if(barcode_erzeugen == "ja")
@@ -548,6 +600,18 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
             }
         }
     }
+    if(gesamtliste_anlegen == "ja")
+    {
+        QString alter_text = ui->plainTextEdit_Meldungsfenster->toPlainText();
+        if(  alter_text.isEmpty()  )
+        {
+            ui->plainTextEdit_Meldungsfenster->setPlainText("Gesamtliste wurde im Zielverzeichnis gespeichert.");
+        }else
+        {
+            ui->plainTextEdit_Meldungsfenster->setPlainText(alter_text + "\n" + "Gesamtliste wurde im Zielverzeichnis gespeichert.");
+        }
+    }
+    QApplication::restoreOverrideCursor();
 }
 
 QString MainWindow::barcode_to_csv(QString alter_inhalt)
@@ -845,6 +909,17 @@ void MainWindow::on_checkBox_unterordner_erstellen_soptidat_stateChanged()
     schreibe_ini();
 }
 
+void MainWindow::on_checkBox_gesamtliste_stateChanged()
+{
+    if(ui->checkBox_gesamtliste->isChecked() == true)
+    {
+        gesamtliste_anlegen = "ja";
+    }else
+    {
+        gesamtliste_anlegen = "nein";
+    }
+    schreibe_ini();
+}
 //-----------------------------------------------------------------------Radio-Buttons:
 void MainWindow::on_radioButton_csv_to_zielverz_toggled(bool checked)
 {
@@ -940,6 +1015,7 @@ QString MainWindow::text_mitte(const QString text, const QString textDavor, cons
 //-----------------------------------------------------------------------public solts:
 void MainWindow::slot_anfrage_pfade()
 {
+    disconnect(this, SIGNAL(signal_pfade(QString, QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString,QString)));
     connect(this, SIGNAL(signal_pfade(QString, QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString,QString)));
     emit signal_pfade(verzeichnis_root, verzeichnis_root2, verzeichnis_auftraege_an_pios, verzeichnis_soptidat);
 }
@@ -950,7 +1026,7 @@ void MainWindow::slot_info(QString infotext)
     {
         ui->plainTextEdit_Meldungsfenster->setPlainText(infotext);
     }
-    disconnect(this, SIGNAL(signal_pfade(QString, QString,QString,QString)), &dia_leer_Ordn_entf, SLOT(slot_pfade(QString,QString,QString,QString)));
+
 }
 
 
@@ -972,6 +1048,8 @@ void MainWindow::on_actionLeere_Unterordner_entfernen_triggered()
     dia_leer_Ordn_entf.show();
 
 }
+
+
 
 
 

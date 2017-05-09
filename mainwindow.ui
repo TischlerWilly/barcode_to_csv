@@ -149,7 +149,7 @@
      <rect>
       <x>11</x>
       <y>221</y>
-      <width>173</width>
+      <width>182</width>
       <height>341</height>
      </rect>
     </property>
@@ -231,17 +231,18 @@
       </widget>
      </item>
      <item>
-      <spacer name="verticalSpacer">
+      <widget class="Line" name="line">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_gesamtliste">
+       <property name="text">
+        <string>Gesamtliste im ZV anlegen</string>
        </property>
-      </spacer>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_Dateien_auflisten">
@@ -267,8 +268,8 @@
      <rect>
       <x>38</x>
       <y>291</y>
-      <width>161</width>
-      <height>51</height>
+      <width>181</width>
+      <height>52</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -302,8 +303,8 @@
     <property name="title">
      <string>Extras</string>
     </property>
-    <addaction name="actionLeere_Unterordner_entfernen"/>
     <addaction name="actionInfo"/>
+    <addaction name="actionLeere_Unterordner_entfernen"/>
    </widget>
    <addaction name="menuInfo"/>
   </widget>
@@ -322,6 +323,30 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>lineEdit_quelle</tabstop>
+  <tabstop>lineEdit_ziel</tabstop>
+  <tabstop>lineEdit_root</tabstop>
+  <tabstop>lineEdit_root2</tabstop>
+  <tabstop>lineEdit_auftraege_an_pios</tabstop>
+  <tabstop>lineEdit_soptidat</tabstop>
+  <tabstop>pushButton_quelle</tabstop>
+  <tabstop>pushButton_ziel</tabstop>
+  <tabstop>pushButton_root</tabstop>
+  <tabstop>pushButton_root2</tabstop>
+  <tabstop>pushButton_auftraege_an_pios</tabstop>
+  <tabstop>pushButton_soptidat</tabstop>
+  <tabstop>checkBox_quelldateien_erhalten</tabstop>
+  <tabstop>checkBox_barcode_erzeugen</tabstop>
+  <tabstop>radioButton_csv_to_zielverz</tabstop>
+  <tabstop>radioButton_csv_to_an_pios</tabstop>
+  <tabstop>checkBox_unterordner_erstellen_cnc</tabstop>
+  <tabstop>checkBox_unterordner_erstellen_cnc2</tabstop>
+  <tabstop>checkBox_unterordner_erstellen_soptidat</tabstop>
+  <tabstop>pushButton_Dateien_auflisten</tabstop>
+  <tabstop>pushButton_Barcode_erzeugen</tabstop>
+  <tabstop>plainTextEdit_Meldungsfenster</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

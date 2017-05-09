@@ -6,6 +6,7 @@ Dialog_leere_unterurdner_entfernen::Dialog_leere_unterurdner_entfernen(QWidget *
     ui(new Ui::Dialog_leere_unterurdner_entfernen)
 {
     ui->setupUi(this);
+    this->setWindowFlags(Qt::Tool);
 }
 
 Dialog_leere_unterurdner_entfernen::~Dialog_leere_unterurdner_entfernen()
@@ -47,6 +48,7 @@ void Dialog_leere_unterurdner_entfernen::on_pushButton_start_clicked()
 
 void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString cnc2, QString pios, QString sopti)
 {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     QString info = "";
     if(ui->checkBox_cnc->isChecked())
     {
@@ -115,6 +117,7 @@ void Dialog_leere_unterurdner_entfernen::slot_pfade(QString cnc, QString cnc2, Q
             info += "\n";
         }
     }
+    QApplication::restoreOverrideCursor();
     this->close();
     emit sig_info(info);
 }
