@@ -1,9 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
 #define VERSIONSNUMMER  "2017.05.09"
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -613,7 +611,6 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
             ui->plainTextEdit_Meldungsfenster->setPlainText(alter_text + "\n" + "Gesamtliste wurde im Zielverzeichnis gespeichert.");
         }
     }
-
     QApplication::restoreOverrideCursor();
 }
 
@@ -1032,25 +1029,66 @@ void MainWindow::slot_info(QString infotext)
 
 }
 
-
-//-----------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
+//-----------------------------------------------------------------------Extras:
 void MainWindow::on_actionLeere_Unterordner_entfernen_triggered()
 {
     dia_leer_Ordn_entf.show();
 
 }
+
+void MainWindow::on_actionBIlddateilen_IMAWOP_entfernen_triggered()
+{
+    if(QDir(verzeichnis_root2).exists())//IMA-Verzeichnis
+    {
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+        QString info = int_zu_qstring(dateien_entfernen(verzeichnis_root2, ".EMF"));
+        ui->plainTextEdit_Meldungsfenster->setPlainText(info + " Bilddateien wurden im IMA-Verzeichnis entfernt.");
+        QApplication::restoreOverrideCursor();
+    }else
+    {
+        ui->plainTextEdit_Meldungsfenster->setPlainText("IMA CNC-Wurzelverzeichnis-Pfad ungueltig!");
+    }
+}
+
+int MainWindow::dateien_entfernen(QString pfad, QString dateiendung)
+{
+    int zaele_dateien = 0;
+    QDir verzeichnis(pfad);
+    if(!verzeichnis.exists())
+    {
+        return 0;
+    }else
+    {
+        QStringList list = verzeichnis.entryList();
+        for(int i = 0 ; i<list.count() ; i++)
+        {
+            QString name = list.at(i);
+            if(  name.contains(dateiendung)  &&  (name == text_links(name, dateiendung)+dateiendung)  )
+            {                                   //Wenn die Dateiendung auch wirklich am Ende steht
+                QFile datei(pfad + QDir::separator() + name);
+                if(datei.remove())
+                {
+                    zaele_dateien++;
+                }
+                QDir dir(pfad + QDir::separator() + list.at(i));
+                if(  dir.exists()  )//Wenn es einen Ordner gibt mit dieser Dateiendung
+                {
+                    zaele_dateien += dateien_entfernen(pfad + QDir::separator() + list.at(i), dateiendung);
+                }
+            }else
+            {
+                QDir dir(pfad + QDir::separator() + list.at(i));
+                if(  dir.exists()  && list.at(i)!="."  &&  list.at(i)!="..")
+                {
+                    zaele_dateien += dateien_entfernen(pfad + QDir::separator() + list.at(i), dateiendung);
+                }
+            }
+        }
+    }
+    return zaele_dateien;
+}
+
+//-----------------------------------------------------------------------
 
 
 

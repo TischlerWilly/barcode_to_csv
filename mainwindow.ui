@@ -305,6 +305,7 @@
     </property>
     <addaction name="actionInfo"/>
     <addaction name="actionLeere_Unterordner_entfernen"/>
+    <addaction name="actionBIlddateilen_IMAWOP_entfernen"/>
    </widget>
    <addaction name="menuInfo"/>
   </widget>
@@ -319,6 +320,11 @@
   <action name="actionLeere_Unterordner_entfernen">
    <property name="text">
     <string>leere Unterordner entfernen</string>
+   </property>
+  </action>
+  <action name="actionBIlddateilen_IMAWOP_entfernen">
+   <property name="text">
+    <string>Bilddateilen IMAWOP entfernen</string>
    </property>
   </action>
  </widget>

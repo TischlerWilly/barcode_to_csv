@@ -55,6 +55,8 @@ private slots:
     void on_checkBox_unterordner_erstellen_cnc2_stateChanged();
     void on_checkBox_gesamtliste_stateChanged();
 
+    void on_actionBIlddateilen_IMAWOP_entfernen_triggered();
+
 private:
     Ui::MainWindow *ui;
     QString tz; //Trennzeichen für Pfade (Linux '/'  Windows '\')
@@ -83,6 +85,7 @@ private:
     void setup();
     void schreibe_ini();
     QString barcode_to_csv(QString alter_inhalt);
+    int dateien_entfernen(QString pfad, QString dateiendung);
 
 public slots:
     void slot_anfrage_pfade();
