@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define VERSIONSNUMMER  "2017.05.09"
+#define VERSIONSNUMMER  "2.2017.06.14"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -272,17 +272,17 @@ void MainWindow::on_actionInfo_triggered()
     QString tmp;
     tmp = "Barcode to CSV / Version:  ";
     tmp += VERSIONSNUMMER;
-    tmp +=" / Lizenz:  GPL / Autor: Oliver Schuft\n";
+    tmp +=" / Lizenz:  GPL\n";
     tmp += "\n";
     tmp +="WICHTIG: Barcode unterstuetzt die deutschen Umlaute nicht!\n";
     tmp += "\n";
     tmp +="Aufbau des Barcodes:\n";
-    tmp +="1. Projektgruppe\n";
-    tmp +="   z.B: UKB\n";
+    //tmp +="1. Projektgruppe\n";
+    //tmp +="   z.B: UKB\n";
     tmp +="2. Projekt\n";
     tmp +="   z.B: UKB22\n";
     tmp +="3. Position(immer 4-stellig)\n";
-    tmp +="   z.B: pos1001 oder pos0001 oder 0102,5\n";
+    tmp +="   z.B: 1001 oder 0001 oder 0102,5\n";
     tmp +="4. ggf Baugruppe\n";
     tmp +="   z.B: S1\n";
     tmp +="5. Teilbezeichnung\n";
@@ -635,13 +635,14 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
 
             QString barcode="";                                       //Spalte19
             //Aufbau des Barcodes:
-            //      Projektgruppe   (UKB)       Teil von "Auftrag"      Spalte 29(Teil)
+            //entfällt      Projektgruppe   (UKB)       Teil von "Auftrag"      Spalte 29(Teil)
             //      Projekt         (UKB12)     "Auftrag"               Spalte 29
             //      Position        (0001)      "Aufpos"                Spalte 4(immer 4-stellig)
             //      Baugruppe       (S1)        Teil von "Teilbez"      Spalte 5(Teil)/nicht bei jedem Teil
             //      Teilbezeichnung (Seite_li)  "Teilbez"               Spalte 5(immer ohne Baugruppe)
             QString tmp = eintraege.zeile(29);
             //Projektgruppe:
+            /*
             for(int j = 0 ; j<tmp.length() ; j++)
             {
                 if(tmp.at(j)!='0' && tmp.at(j)!='1' && tmp.at(j)!='2' && tmp.at(j)!='3' && tmp.at(j)!='4' && tmp.at(j)!='5' && tmp.at(j)!='6' && tmp.at(j)!='7' && tmp.at(j)!='8' && tmp.at(j)!='9')
@@ -653,11 +654,12 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
                 }
             }
             barcode += QDir::separator();
+            */
             //Projekt:
             barcode += tmp;
             barcode += QDir::separator();
             //Position:
-            barcode += "pos";
+            //barcode += "pos";
             tmp = eintraege.zeile(4);
             if(tmp.contains(","))
             {
@@ -822,6 +824,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
             if(  (auswahl_zielverz == AUSGABEPFAD_CSV_AUFTRAEGE_AN_POIS)  &&  (barcode_erzeugen=="ja")  )
             {
                 QString pfad = "";
+
                 tmp = eintraege.zeile(29);
                 //Projektgruppe:
                 for(int j = 0 ; j<tmp.length() ; j++)
@@ -835,6 +838,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
                     }
                 }
                 pfad += QDir::separator();
+
                 //Projekt:
                 pfad += eintraege.zeile(29);
                 //Ordner anlegen:
