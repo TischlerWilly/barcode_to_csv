@@ -719,6 +719,9 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
                         barcode += text_links(tmp, "_");
                         barcode += QDir::separator();
                         barcode += text_rechts(tmp, "_");
+                    }else
+                    {
+                        barcode += tmp;
                     }
                 }else
                 {
@@ -728,6 +731,9 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
             {
                 barcode += tmp;
             }
+
+            //QMessageBox mb;
+            //mb.setText("zeile:\n"+eintraege.get_text()+"\nBez:\n"+tmp);
 
             //jetzt barcode ergänzen:
             eintraege.zeile_ersaetzen(19,barcode);
