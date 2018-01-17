@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define VERSIONSNUMMER  "2.2017.06.14"
+#define VERSIONSNUMMER  "2.2018.01.17"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -494,6 +494,9 @@ void MainWindow::on_pushButton_Dateien_auflisten_clicked()
 void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt Start
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
+    elementnumern.clear();
+    fehler_elementnumern_doppelt = false;
+    fehler_multiplexplatten_kante_ohne_kd = false;
     if(verzeichnis_quelle.isEmpty())
     {
         QMessageBox::warning(this,"Abbruch","Quellverzeichniss nicht angegeben!",QMessageBox::Ok);
@@ -610,6 +613,18 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
         {
             ui->plainTextEdit_Meldungsfenster->setPlainText(alter_text + "\n" + "Gesamtliste wurde im Zielverzeichnis gespeichert.");
         }
+    }
+    if(fehler_elementnumern_doppelt == true)
+    {
+        QMessageBox mb;
+        mb.setText("Achtung!\nElementnummern wurden mehrfach vergeben!\nMehrere Teile haben die selbe Elementnummer!");
+        mb.exec();
+    }
+    if(fehler_multiplexplatten_kante_ohne_kd == true)
+    {
+        QMessageBox mb;
+        mb.setText("Achtung!\nKantendicke an Multiplexteilen kontrollieren!\nEs sollte K10X oder K20X verwendet werden!");
+        mb.exec();
     }
     QApplication::restoreOverrideCursor();
 }
@@ -855,6 +870,64 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
         }
     }
 
+    //--------------------------------------Fehlersuche Elementnummern:
+    for(uint i = 3; i<a.zeilenanzahl() ; i++)
+    {
+        text_zeilenweise eintraege;
+        eintraege.set_trennzeichen(';');
+        eintraege.set_text(a.zeile(i));
+        QString neue_nummer = eintraege.zeile(3);
+
+        for(uint ii=1; ii<=elementnumern.zeilenanzahl() ;ii++)
+        {
+            if(elementnumern.zeile(ii) == neue_nummer)
+            {
+                fehler_elementnumern_doppelt = true;
+            }
+        }
+
+        elementnumern.zeile_anhaengen(neue_nummer);
+    }
+    //--------------------------------------Fehlersuche Kantendicke bei Multiplexplatten:
+    for(uint i = 3; i<a.zeilenanzahl() ; i++)
+    {
+        text_zeilenweise eintraege;
+        eintraege.set_trennzeichen(';');
+        eintraege.set_text(a.zeile(i));
+        QString material = eintraege.zeile(2);
+        QString kante_li = eintraege.zeile(10);
+        QString kante_re = eintraege.zeile(11);
+        QString kante_ob = eintraege.zeile(12);
+        QString kante_un = eintraege.zeile(13);
+        QString kadi_li = eintraege.zeile(15);
+        QString kadi_re = eintraege.zeile(16);
+        QString kadi_ob = eintraege.zeile(17);
+        QString kadi_un = eintraege.zeile(18);
+
+        QString traegerplatte = material.at(3);
+        traegerplatte += material.at(4);
+
+        if(traegerplatte == "mx")//Multiplex
+        {
+            if(!kante_li.isEmpty()  && kadi_li == "0")
+            {
+                fehler_multiplexplatten_kante_ohne_kd = true;
+            }
+            if(!kante_re.isEmpty()  && kadi_re == "0")
+            {
+                fehler_multiplexplatten_kante_ohne_kd = true;
+            }
+            if(!kante_ob.isEmpty()  && kadi_ob == "0")
+            {
+                fehler_multiplexplatten_kante_ohne_kd = true;
+            }
+            if(!kante_un.isEmpty()  && kadi_un == "0")
+            {
+                fehler_multiplexplatten_kante_ohne_kd = true;
+            }
+        }
+    }
+    //--------------------------------------
     return n.get_text();
 }
 

@@ -60,6 +60,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QString tz; //Trennzeichen für Pfade (Linux '/'  Windows '\')
+    text_zeilenweise elementnumern;
+    bool fehler_elementnumern_doppelt;
+    bool fehler_multiplexplatten_kante_ohne_kd;
 
     //Pfade:
     QString verzeichnis_quelle, verzeichnis_ziel, verzeichnis_root, verzeichnis_root2;
