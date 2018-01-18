@@ -89,6 +89,7 @@ private:
     void schreibe_ini();
     QString barcode_to_csv(QString alter_inhalt);
     int dateien_entfernen(QString pfad, QString dateiendung);
+    bool ist_ziffer(const QChar zeichen);
 
 public slots:
     void slot_anfrage_pfade();

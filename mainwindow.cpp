@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define VERSIONSNUMMER  "2.2018.01.17"
+#define VERSIONSNUMMER  "2.2018.01.18"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -909,19 +909,19 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
 
         if(traegerplatte == "mx")//Multiplex
         {
-            if(!kante_li.isEmpty()  && kadi_li == "0")
+            if(!kante_li.isEmpty()  && kadi_li == "0" && ist_ziffer(kante_li.at(0)))
             {
                 fehler_multiplexplatten_kante_ohne_kd = true;
             }
-            if(!kante_re.isEmpty()  && kadi_re == "0")
+            if(!kante_re.isEmpty()  && kadi_re == "0" && ist_ziffer(kante_re.at(0)))
             {
                 fehler_multiplexplatten_kante_ohne_kd = true;
             }
-            if(!kante_ob.isEmpty()  && kadi_ob == "0")
+            if(!kante_ob.isEmpty()  && kadi_ob == "0" && ist_ziffer(kante_ob.at(0)))
             {
                 fehler_multiplexplatten_kante_ohne_kd = true;
             }
-            if(!kante_un.isEmpty()  && kadi_un == "0")
+            if(!kante_un.isEmpty()  && kadi_un == "0" && ist_ziffer(kante_un.at(0)))
             {
                 fehler_multiplexplatten_kante_ohne_kd = true;
             }
@@ -1173,6 +1173,16 @@ int MainWindow::dateien_entfernen(QString pfad, QString dateiendung)
 
 //-----------------------------------------------------------------------
 
+bool MainWindow::ist_ziffer(const QChar zeichen)
+{
+    if(zeichen == '0' || zeichen == '1' || zeichen == '2' || zeichen == '2' || zeichen == '3' || zeichen == '4' || zeichen == '5' || zeichen == '6' || zeichen == '7' || zeichen == '8' || zeichen == '9')
+    {
+        return true;
+    }else
+    {
+        return false;
+    }
+}
 
 
 
