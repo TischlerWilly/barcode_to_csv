@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define VERSIONSNUMMER  "2.2018.01.18"
+#define VERSIONSNUMMER  "2.2018.05.02"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -283,12 +283,18 @@ void MainWindow::on_actionInfo_triggered()
     tmp +="   z.B: UKB22\n";
     tmp +="3. Position(immer 4-stellig)\n";
     tmp +="   z.B: 1001 oder 0001 oder 0102,5\n";
-    tmp +="4. ggf Baugruppe\n";
-    tmp +="   z.B: S1\n";
+    tmp +="4. ggf Schranknummer oder Baugruppe\n";
+    tmp +="   z.B: #PAX oder S1\n";
     tmp +="5. Teilbezeichnung\n";
     tmp +="   z.B: Seite_li\n";
     tmp +="\n";
-    tmp +="Beispiel: UKB/UKB12/pos0001/S1/Tuer_li";
+    tmp +="Verwendung von Schranknummern: S + Ziffer + ... + _";
+    tmp +="\n";
+    tmp +="Beispiel: S1_Seite_li  -->  UKB/UKB12/pos0001/S1/Seite_li";
+    tmp +="\n";
+    tmp +="Verwendung von Baugruppennummern: # + ... + _";
+    tmp +="\n";
+    tmp +="Beispiel: #PAX_Seite_li  -->  UKB/UKB12/pos0001/#PAX/Seite_li";
 
     ui->plainTextEdit_Meldungsfenster->setPlainText(tmp);
 }
@@ -727,7 +733,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
             tmp = eintraege.zeile(5);
             if(tmp.contains("_"))
             {
-                if(tmp.at(0)=='S')
+                if(tmp.at(0)=='S')//Schranknummer
                 {
                     if(tmp.at(1)=='0' || tmp.at(1)=='1' || tmp.at(1)=='2' || tmp.at(1)=='3' || tmp.at(1)=='4' || tmp.at(1)=='5' || tmp.at(1)=='6' || tmp.at(1)=='7' || tmp.at(1)=='8' || tmp.at(1)=='9')
                     {
@@ -738,6 +744,11 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
                     {
                         barcode += tmp;
                     }
+                }else if(tmp.at(0)=='#')//Baugruppenbezeichung
+                {
+                    barcode += text_links(tmp, "_");
+                    barcode += QDir::separator();
+                    barcode += text_rechts(tmp, "_");
                 }else
                 {
                     barcode += tmp;
