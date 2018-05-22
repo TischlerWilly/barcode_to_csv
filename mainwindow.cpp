@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define VERSIONSNUMMER  "2.2018.05.02"
+#define VERSIONSNUMMER  "2.2018.05.22"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -530,7 +530,7 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
             QMessageBox::warning(this,"Fehler","Fehler beim Dateizugriff!",QMessageBox::Ok);
         }else
         {
-            alter_inhalt = oldfile.readAll();
+            alter_inhalt = QString::fromLatin1(oldfile.readAll());
         }
         if(quelldateien_erhalten == "nein")
         {
@@ -594,7 +594,8 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
                 QMessageBox::warning(this,"Fehler","Fehler beim Dateizugriff!",QMessageBox::Ok);
             }else
             {
-                newfile.write(neuer_inhalt.toUtf8());
+                //newfile.write(neuer_inhalt.toUtf8());
+                newfile.write(neuer_inhalt.toLatin1());
             }
             newfile.close();
         }else
