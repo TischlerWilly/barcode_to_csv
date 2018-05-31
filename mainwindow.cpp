@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define VERSIONSNUMMER  "2.2018.05.22"
+#define VERSIONSNUMMER  "2.2018.05.31"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -563,7 +563,8 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
                 QMessageBox::warning(this,"Fehler","Fehler beim Dateizugriff!",QMessageBox::Ok);
             }else
             {
-                newfile.write(gesamtliste.toUtf8());
+                //newfile.write(gesamtliste.toUtf8());
+                newfile.write(gesamtliste.toLatin1());
             }
             newfile.close();
         }
