@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define VERSIONSNUMMER  "2.2018.05.22"
+#define VERSIONSNUMMER  "2.2018.10.25"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -285,16 +285,24 @@ void MainWindow::on_actionInfo_triggered()
     tmp +="   z.B: 1001 oder 0001 oder 0102,5\n";
     tmp +="4. ggf Schranknummer oder Baugruppe\n";
     tmp +="   z.B: #PAX oder S1\n";
+    tmp +="   bei Baugruppen die mit einem @ beginnen";
+    tmp +="   szeht alles links vom _ nicht im Barcode";
     tmp +="5. Teilbezeichnung\n";
     tmp +="   z.B: Seite_li\n";
     tmp +="\n";
     tmp +="Verwendung von Schranknummern: S + Ziffer + ... + _";
     tmp +="\n";
-    tmp +="Beispiel: S1_Seite_li  -->  UKB/UKB12/pos0001/S1/Seite_li";
+    tmp +="Beispiel: S1_Seite_li  -->  UKB/UKB12/0001/S1/Seite_li";
+    tmp +="\n";
     tmp +="\n";
     tmp +="Verwendung von Baugruppennummern: # + ... + _";
     tmp +="\n";
-    tmp +="Beispiel: #PAX_Seite_li  -->  UKB/UKB12/pos0001/#PAX/Seite_li";
+    tmp +="Beispiel: #PAX_Seite_li  -->  UKB/UKB12/0001/PAX/Seite_li";
+    tmp +="\n";
+    tmp +="\n";
+    tmp +="Verwendung von Baugruppennummern: @ + ... + _";
+    tmp +="\n";
+    tmp +="Beispiel: @PAX_Seite_li  -->  UKB/UKB12/0001/Seite_li";
 
     ui->plainTextEdit_Meldungsfenster->setPlainText(tmp);
 }
@@ -563,7 +571,8 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
                 QMessageBox::warning(this,"Fehler","Fehler beim Dateizugriff!",QMessageBox::Ok);
             }else
             {
-                newfile.write(gesamtliste.toUtf8());
+                //newfile.write(gesamtliste.toUtf8());
+                newfile.write(gesamtliste.toLatin1());
             }
             newfile.close();
         }
@@ -747,8 +756,12 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
                     }
                 }else if(tmp.at(0)=='#')//Baugruppenbezeichung
                 {
-                    barcode += text_links(tmp, "_");
+                    barcode += text_rechts((text_links(tmp, "_")),"#");
                     barcode += QDir::separator();
+                    barcode += text_rechts(tmp, "_");
+                }else if(tmp.at(0)=='@')//Baugruppenbezeichung nicht im Barcode
+                {
+                    //text links vom "@" weglassen
                     barcode += text_rechts(tmp, "_");
                 }else
                 {
