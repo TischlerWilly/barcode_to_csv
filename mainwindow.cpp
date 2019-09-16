@@ -647,7 +647,6 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
 
 QString MainWindow::barcode_to_csv(QString alter_inhalt)
 {
-
     text_zeilenweise a; //alter text
     a.set_text(alter_inhalt);
     text_zeilenweise n; //neuer text
