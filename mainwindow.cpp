@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define VERSIONSNUMMER  "2.2018.10.25"
+#define VERSIONSNUMMER  "2.2019.09.16"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -647,6 +647,7 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
 
 QString MainWindow::barcode_to_csv(QString alter_inhalt)
 {
+
     text_zeilenweise a; //alter text
     a.set_text(alter_inhalt);
     text_zeilenweise n; //neuer text
@@ -668,7 +669,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
             n.set_text(a.zeile(i));
         }else if((i==2) && (quellprg == "PH"))
         {
-            n.zeilen_anhaengen(a.zeile(i));
+            n.zeilen_anhaengen(a.zeile(i));            
         }else
         {
 
