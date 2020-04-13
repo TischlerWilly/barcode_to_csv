@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "todo.h"
 
-#define VERSIONSNUMMER  "2.2020.01.17"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

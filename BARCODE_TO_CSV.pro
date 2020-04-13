@@ -26,3 +26,8 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     dialog_leere_unterurdner_entfernen.ui
+
+DISTFILES += \
+    barcode_gelb.ico
+
+RC_ICONS = barcode_gelb.ico
