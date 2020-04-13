@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "todo.h"
 
-#define VERSIONSNUMMER  "2.2019.09.16"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -647,6 +647,8 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
 
 QString MainWindow::barcode_to_csv(QString alter_inhalt)
 {
+    uint pos_projektnummer = 1;
+
     text_zeilenweise a; //alter text
     a.set_text(alter_inhalt);
     text_zeilenweise n; //neuer text
@@ -683,22 +685,9 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
             //      Position        (0001)      "Aufpos"                Spalte 4(immer 4-stellig)
             //      Baugruppe       (S1)        Teil von "Teilbez"      Spalte 5(Teil)/nicht bei jedem Teil
             //      Teilbezeichnung (Seite_li)  "Teilbez"               Spalte 5(immer ohne Baugruppe)
-            QString tmp = eintraege.zeile(29);
-            //Projektgruppe:
-            /*
-            for(int j = 0 ; j<tmp.length() ; j++)
-            {
-                if(tmp.at(j)!='0' && tmp.at(j)!='1' && tmp.at(j)!='2' && tmp.at(j)!='3' && tmp.at(j)!='4' && tmp.at(j)!='5' && tmp.at(j)!='6' && tmp.at(j)!='7' && tmp.at(j)!='8' && tmp.at(j)!='9')
-                {
-                    barcode += tmp.at(j);
-                }else
-                {
-                    break;
-                }
-            }
-            barcode += QDir::separator();
-            */
+
             //Projekt:
+            QString tmp = eintraege.zeile(pos_projektnummer);
             barcode += tmp;
             barcode += QDir::separator();
             //Position:
@@ -858,7 +847,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
             if(unterordner_erstellen_soptidat == "ja")
             {
                 QString pfad_soptidat = "";
-                tmp = eintraege.zeile(29);
+                tmp = eintraege.zeile(pos_projektnummer);
                 //Projektgruppe:
                 for(int j = 0 ; j<tmp.length() ; j++)
                 {
@@ -872,7 +861,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
                 }
                 pfad_soptidat += QDir::separator();
                 //Projekt:
-                pfad_soptidat += eintraege.zeile(29);
+                pfad_soptidat += eintraege.zeile(pos_projektnummer);
                 //Ordner anlegen:
                 QDir dir;
                 dir.mkpath(verzeichnis_soptidat + QDir::separator() + pfad_soptidat);
@@ -883,7 +872,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
             {
                 QString pfad = "";
 
-                tmp = eintraege.zeile(29);
+                tmp = eintraege.zeile(pos_projektnummer);
                 //Projektgruppe:
                 for(int j = 0 ; j<tmp.length() ; j++)
                 {
@@ -898,7 +887,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
                 pfad += QDir::separator();
 
                 //Projekt:
-                pfad += eintraege.zeile(29);
+                pfad += eintraege.zeile(pos_projektnummer);
                 //Ordner anlegen:
                 pfad_an_pios = verzeichnis_auftraege_an_pios + QDir::separator() + pfad;
                 QDir dir;
