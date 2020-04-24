@@ -559,7 +559,7 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
             {
                 text_zeilenweise tz;
                 tz.set_text(neuer_inhalt);
-                for(uint ii = 3 ; ii<=tz.zeilenanzahl() ; ii++)
+                for(uint ii = 2 ; ii<=tz.zeilenanzahl() ; ii++)
                 {
                     gesamtliste += "\n";
                     gesamtliste += tz.zeile(ii);
@@ -653,246 +653,240 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
     a.set_text(alter_inhalt);
     text_zeilenweise n; //neuer text
 
-    QString quellprg = "PH";
-    if(a.zeile(2).contains("Leerzeile;;;;;;;;;;;;;;;;;"))
+    if(a.zeile(2).contains("Leerzeile;;;;;;;;;;;;;;;;;"))//Quelle ist PH
     {
-        quellprg = "PH";
-    }else
+        a.zeile_loeschen(2);
+    }else                                               //Quelle ist MyF
     {
-        quellprg ="MyF";
-        a.set_text(a.get_text().replace("\"", ""));//Entenfüße entfernen
+        a.set_text(a.text().replace("\"", ""));//Entenfüße entfernen
     }
 
-    for(uint i = 1; i<a.zeilenanzahl() ; i++)
+    n.set_text(a.zeile(1));//Tabellenkopf
+
+    for(uint i = 2; i<=a.zeilenanzahl() ; i++)//Start ab Zeile 2 (unter dem Tabellenkopf)
     {
-        if(i==1)
+        if(!a.zeile(i).contains(";")) //Leere Zeile
         {
-            n.set_text(a.zeile(i));
-        }else if((i==2) && (quellprg == "PH"))
+            continue;
+        }
+        text_zeilenweise eintraege;
+        eintraege.set_trennzeichen(';');
+        eintraege.set_text(a.zeile(i));
+
+        QString barcode="";                                       //Spalte19
+        //Aufbau des Barcodes:
+        //entfällt      Projektgruppe   (UKB)       Teil von "Auftrag"      Spalte 29(Teil)
+        //      Projekt         (UKB12)     "Auftrag"               Spalte 29
+        //      Position        (0001)      "Aufpos"                Spalte 4(immer 4-stellig)
+        //      Baugruppe       (S1)        Teil von "Teilbez"      Spalte 5(Teil)/nicht bei jedem Teil
+        //      Teilbezeichnung (Seite_li)  "Teilbez"               Spalte 5(immer ohne Baugruppe)
+
+        //Projekt:
+        QString tmp = eintraege.zeile(pos_projektnummer);
+        barcode += tmp;
+        barcode += QDir::separator();
+        //Position:
+        //barcode += "pos";
+        tmp = eintraege.zeile(4);
+        if(tmp.contains(","))
         {
-            n.zeilen_anhaengen(a.zeile(i));            
+            QString li = text_links(tmp, ",");
+            QString re = text_rechts(tmp, ",");
+            if(li.length()==4)
+            {
+                barcode += tmp;
+            }else if(li.length()==3)
+            {
+                barcode += "0";
+                barcode += li;
+                barcode += ",";
+                barcode += re;
+            }else if(li.length()==2)
+            {
+                barcode += "00";
+                barcode += li;
+                barcode += ",";
+                barcode += re;
+            }else if(li.length()==1)
+            {
+                barcode += "000";
+                barcode += li;
+                barcode += ",";
+                barcode += re;
+            }
+            barcode += QDir::separator();
         }else
         {
-
-            text_zeilenweise eintraege;
-            eintraege.set_trennzeichen(';');
-            eintraege.set_text(a.zeile(i));
-
-            QString barcode="";                                       //Spalte19
-            //Aufbau des Barcodes:
-            //entfällt      Projektgruppe   (UKB)       Teil von "Auftrag"      Spalte 29(Teil)
-            //      Projekt         (UKB12)     "Auftrag"               Spalte 29
-            //      Position        (0001)      "Aufpos"                Spalte 4(immer 4-stellig)
-            //      Baugruppe       (S1)        Teil von "Teilbez"      Spalte 5(Teil)/nicht bei jedem Teil
-            //      Teilbezeichnung (Seite_li)  "Teilbez"               Spalte 5(immer ohne Baugruppe)
-
-            //Projekt:
-            QString tmp = eintraege.zeile(pos_projektnummer);
-            barcode += tmp;
-            barcode += QDir::separator();
-            //Position:
-            //barcode += "pos";
-            tmp = eintraege.zeile(4);
-            if(tmp.contains(","))
+            if(tmp.length()==4)
             {
-                QString li = text_links(tmp, ",");
-                QString re = text_rechts(tmp, ",");
-                if(li.length()==4)
-                {
-                    barcode += tmp;
-                }else if(li.length()==3)
-                {
-                    barcode += "0";
-                    barcode += li;
-                    barcode += ",";
-                    barcode += re;
-                }else if(li.length()==2)
-                {
-                    barcode += "00";
-                    barcode += li;
-                    barcode += ",";
-                    barcode += re;
-                }else if(li.length()==1)
-                {
-                    barcode += "000";
-                    barcode += li;
-                    barcode += ",";
-                    barcode += re;
-                }
-                barcode += QDir::separator();
-            }else
+                barcode += tmp;
+            }else if(tmp.length()==3)
             {
-                if(tmp.length()==4)
-                {
-                    barcode += tmp;
-                }else if(tmp.length()==3)
-                {
-                    barcode += "0";
-                    barcode += tmp;
-                }else if(tmp.length()==2)
-                {
-                    barcode += "00";
-                    barcode += tmp;
-                }else if(tmp.length()==1)
-                {
-                    barcode += "000";
-                    barcode += tmp;
-                }
-                barcode += QDir::separator();
+                barcode += "0";
+                barcode += tmp;
+            }else if(tmp.length()==2)
+            {
+                barcode += "00";
+                barcode += tmp;
+            }else if(tmp.length()==1)
+            {
+                barcode += "000";
+                barcode += tmp;
             }
-            //Baugruppe + Teilbezeichnung:
-            tmp = eintraege.zeile(5);
-            if(tmp.contains("_"))
+            barcode += QDir::separator();
+        }
+        //Baugruppe + Teilbezeichnung:
+        tmp = eintraege.zeile(5);
+        if(tmp.contains("_"))
+        {
+            if(tmp.at(0)=='S')//Schranknummer
             {
-                if(tmp.at(0)=='S')//Schranknummer
+                if(tmp.at(1)=='0' || tmp.at(1)=='1' || tmp.at(1)=='2' || tmp.at(1)=='3' || tmp.at(1)=='4' || tmp.at(1)=='5' || tmp.at(1)=='6' || tmp.at(1)=='7' || tmp.at(1)=='8' || tmp.at(1)=='9')
                 {
-                    if(tmp.at(1)=='0' || tmp.at(1)=='1' || tmp.at(1)=='2' || tmp.at(1)=='3' || tmp.at(1)=='4' || tmp.at(1)=='5' || tmp.at(1)=='6' || tmp.at(1)=='7' || tmp.at(1)=='8' || tmp.at(1)=='9')
-                    {
-                        barcode += text_links(tmp, "_");
-                        barcode += QDir::separator();
-                        barcode += text_rechts(tmp, "_");
-                    }else
-                    {
-                        barcode += tmp;
-                    }
-                }else if(tmp.at(0)=='#')//Baugruppenbezeichung
-                {
-                    barcode += text_rechts((text_links(tmp, "_")),"#");
+                    barcode += text_links(tmp, "_");
                     barcode += QDir::separator();
-                    barcode += text_rechts(tmp, "_");
-                }else if(tmp.at(0)=='@')//Baugruppenbezeichung nicht im Barcode
-                {
-                    //text links vom "@" weglassen
                     barcode += text_rechts(tmp, "_");
                 }else
                 {
                     barcode += tmp;
                 }
+            }else if(tmp.at(0)=='#')//Baugruppenbezeichung
+            {
+                barcode += text_rechts((text_links(tmp, "_")),"#");
+                barcode += QDir::separator();
+                barcode += text_rechts(tmp, "_");
+            }else if(tmp.at(0)=='@')//Baugruppenbezeichung nicht im Barcode
+            {
+                //text links vom "@" weglassen
+                barcode += text_rechts(tmp, "_");
             }else
             {
                 barcode += tmp;
             }
+        }else
+        {
+            barcode += tmp;
+        }
 
-            //QMessageBox mb;
-            //mb.setText("zeile:\n"+eintraege.get_text()+"\nBez:\n"+tmp);
+        //QMessageBox mb;
+        //mb.setText("zeile:\n"+eintraege.get_text()+"\nBez:\n"+tmp);
 
-            //jetzt barcode ergänzen:
-            eintraege.zeile_ersaetzen(19,barcode);
-            //jetzt neue Zeile an n anhängen:
-            n.zeile_anhaengen(eintraege.get_text());
+        //jetzt barcode ergänzen:
+        eintraege.zeile_ersaetzen(19,barcode);
+        //jetzt neue Zeile an n anhängen:
+        n.zeile_anhaengen(eintraege.text());
 
-            //Ordner für CNC anlegen:
-            if(unterordner_erstellen_cnc == "ja")
+        //Ordner für CNC anlegen:
+        if(unterordner_erstellen_cnc == "ja")
+        {
+            if(!verzeichnis_root.isEmpty())
             {
-                if(!verzeichnis_root.isEmpty())
+                char tz;
+                if(QDir::separator() == '/')
                 {
-                    char tz;
-                    if(QDir::separator() == '/')
-                    {
-                        tz = '/';   //LINUX
-                    }else
-                    {
-                        tz = '\\';  //Windows
-                    }
-                    text_zeilenweise p;
-                    p.set_trennzeichen(tz);
-                    p.set_text(barcode);
-                    QString pfad;
-                    for(uint x = 1; x<p.zeilenanzahl() ;x++)
-                    {
-                        pfad += p.zeile(x);
-                        if(x<p.zeilenanzahl()-1)
-                        {
-                            pfad += QDir::separator();
-                        }
-                    }
-
-                    QDir cncdir;
-                    cncdir.mkpath(verzeichnis_root + QDir::separator() + pfad);
+                    tz = '/';   //LINUX
+                }else
+                {
+                    tz = '\\';  //Windows
                 }
-            }
-
-            //Ordner für CNC 2 anlegen:
-            if(unterordner_erstellen_cnc2 == "ja")
-            {
-                if(!verzeichnis_root2.isEmpty())
+                text_zeilenweise p;
+                p.set_trennzeichen(tz);
+                p.set_text(barcode);
+                QString pfad;
+                for(uint x = 1; x<p.zeilenanzahl() ;x++)
                 {
-                    char tz;
-                    if(QDir::separator() == '/')
+                    pfad += p.zeile(x);
+                    if(x<p.zeilenanzahl()-1)
                     {
-                        tz = '/';   //LINUX
-                    }else
-                    {
-                        tz = '\\';  //Windows
-                    }
-                    text_zeilenweise p;
-                    p.set_trennzeichen(tz);
-                    p.set_text(barcode);
-                    QString pfad;
-                    for(uint x = 1; x<p.zeilenanzahl() ;x++)
-                    {
-                        pfad += p.zeile(x);
-                        if(x<p.zeilenanzahl()-1)
-                        {
-                            pfad += QDir::separator();
-                        }
-                    }
-
-                    QDir cncdir;
-                    cncdir.mkpath(verzeichnis_root2 + QDir::separator() + pfad);
-                }
-            }
-
-            //Ordner in SOptiDat anlegen:
-            if(unterordner_erstellen_soptidat == "ja")
-            {
-                QString pfad_soptidat = "";
-                tmp = eintraege.zeile(pos_projektnummer);
-                //Projektgruppe:
-                for(int j = 0 ; j<tmp.length() ; j++)
-                {
-                    if(tmp.at(j)!='0' && tmp.at(j)!='1' && tmp.at(j)!='2' && tmp.at(j)!='3' && tmp.at(j)!='4' && tmp.at(j)!='5' && tmp.at(j)!='6' && tmp.at(j)!='7' && tmp.at(j)!='8' && tmp.at(j)!='9')
-                    {
-                        pfad_soptidat += tmp.at(j);
-                    }else
-                    {
-                        break;
+                        pfad += QDir::separator();
                     }
                 }
-                pfad_soptidat += QDir::separator();
-                //Projekt:
-                pfad_soptidat += eintraege.zeile(pos_projektnummer);
-                //Ordner anlegen:
-                QDir dir;
-                dir.mkpath(verzeichnis_soptidat + QDir::separator() + pfad_soptidat);
+
+                QDir cncdir;
+                cncdir.mkpath(verzeichnis_root + QDir::separator() + pfad);
             }
+        }
 
-            //Ordner in Austräge an PIOS anlegen:
-            if(  (auswahl_zielverz == AUSGABEPFAD_CSV_AUFTRAEGE_AN_POIS)  &&  (barcode_erzeugen=="ja")  )
+        //Ordner für CNC 2 anlegen:
+        if(unterordner_erstellen_cnc2 == "ja")
+        {
+            if(!verzeichnis_root2.isEmpty())
             {
-                QString pfad = "";
-
-                tmp = eintraege.zeile(pos_projektnummer);
-                //Projektgruppe:
-                for(int j = 0 ; j<tmp.length() ; j++)
+                char tz;
+                if(QDir::separator() == '/')
                 {
-                    if(tmp.at(j)!='0' && tmp.at(j)!='1' && tmp.at(j)!='2' && tmp.at(j)!='3' && tmp.at(j)!='4' && tmp.at(j)!='5' && tmp.at(j)!='6' && tmp.at(j)!='7' && tmp.at(j)!='8' && tmp.at(j)!='9')
+                    tz = '/';   //LINUX
+                }else
+                {
+                    tz = '\\';  //Windows
+                }
+                text_zeilenweise p;
+                p.set_trennzeichen(tz);
+                p.set_text(barcode);
+                QString pfad;
+                for(uint x = 1; x<p.zeilenanzahl() ;x++)
+                {
+                    pfad += p.zeile(x);
+                    if(x<p.zeilenanzahl()-1)
                     {
-                        pfad += tmp.at(j);
-                    }else
-                    {
-                        break;
+                        pfad += QDir::separator();
                     }
                 }
-                pfad += QDir::separator();
 
-                //Projekt:
-                pfad += eintraege.zeile(pos_projektnummer);
-                //Ordner anlegen:
-                pfad_an_pios = verzeichnis_auftraege_an_pios + QDir::separator() + pfad;
-                QDir dir;
-                dir.mkpath(pfad_an_pios);
+                QDir cncdir;
+                cncdir.mkpath(verzeichnis_root2 + QDir::separator() + pfad);
             }
+        }
+
+        //Ordner in SOptiDat anlegen:
+        if(unterordner_erstellen_soptidat == "ja")
+        {
+            QString pfad_soptidat = "";
+            tmp = eintraege.zeile(pos_projektnummer);
+            //Projektgruppe:
+            for(int j = 0 ; j<tmp.length() ; j++)
+            {
+                if(tmp.at(j)!='0' && tmp.at(j)!='1' && tmp.at(j)!='2' && tmp.at(j)!='3' && tmp.at(j)!='4' && tmp.at(j)!='5' && tmp.at(j)!='6' && tmp.at(j)!='7' && tmp.at(j)!='8' && tmp.at(j)!='9')
+                {
+                    pfad_soptidat += tmp.at(j);
+                }else
+                {
+                    break;
+                }
+            }
+            pfad_soptidat += QDir::separator();
+            //Projekt:
+            pfad_soptidat += eintraege.zeile(pos_projektnummer);
+            //Ordner anlegen:
+            QDir dir;
+            dir.mkpath(verzeichnis_soptidat + QDir::separator() + pfad_soptidat);
+        }
+
+        //Ordner in Austräge an PIOS anlegen:
+        if(  (auswahl_zielverz == AUSGABEPFAD_CSV_AUFTRAEGE_AN_POIS)  &&  (barcode_erzeugen=="ja")  )
+        {
+            QString pfad = "";
+
+            tmp = eintraege.zeile(pos_projektnummer);
+            //Projektgruppe:
+            for(int j = 0 ; j<tmp.length() ; j++)
+            {
+                if(tmp.at(j)!='0' && tmp.at(j)!='1' && tmp.at(j)!='2' && tmp.at(j)!='3' && tmp.at(j)!='4' && tmp.at(j)!='5' && tmp.at(j)!='6' && tmp.at(j)!='7' && tmp.at(j)!='8' && tmp.at(j)!='9')
+                {
+                    pfad += tmp.at(j);
+                }else
+                {
+                    break;
+                }
+            }
+            pfad += QDir::separator();
+
+            //Projekt:
+            pfad += eintraege.zeile(pos_projektnummer);
+            //Ordner anlegen:
+            pfad_an_pios = verzeichnis_auftraege_an_pios + QDir::separator() + pfad;
+            QDir dir;
+            dir.mkpath(pfad_an_pios);
         }
     }
 
@@ -954,7 +948,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
         }
     }
     //--------------------------------------
-    return n.get_text();
+    return n.text();
 }
 
 //-----------------------------------------------------------------------Checkboxen:
