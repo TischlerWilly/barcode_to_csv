@@ -509,6 +509,7 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     elementnumern.clear();
+    MatList.clear();
     fehler_elementnumern_doppelt = false;
     fehler_multiplexplatten_kante_ohne_kd = false;
     if(verzeichnis_quelle.isEmpty())
@@ -642,6 +643,56 @@ void MainWindow::on_pushButton_Barcode_erzeugen_clicked() //Button heißt jetzt 
         mb.setText("Achtung!\nKantendicke an Multiplexteilen kontrollieren!\nEs sollte K10X oder K20X verwendet werden!");
         mb.exec();
     }
+    //Prüfen ob Material angelegt ist und
+    //Material-auflisten:
+    QString pfad_oma ="P:\\Materialverwaltung\\OMA";
+    QDir omadir(pfad_oma);
+    QString msg = ui->plainTextEdit_Meldungsfenster->toPlainText();
+    msg += "\n\n-----------------------\n";
+    if(omadir.exists())
+    {
+        QStringList omadateiliste;
+        omadateiliste = omadir.entryList(QDir::Files);
+        text_zw dateien;
+        for(QStringList::iterator it = omadateiliste.begin() ; it!=omadateiliste.end() ; ++it)
+        {
+            QString name = *it;
+            name.replace(".oma","");
+            name.replace(".OMA","");
+            dateien.add_hi(name);
+        }
+        for(uint i=0;i<MatList.count();i++)
+        {
+            bool oma_vorhanden = false;
+            QString aktname = MatList.at(i);
+            for(uint ii=0;ii<dateien.count();ii++)
+            {
+                QString omaname = dateien.at(ii);
+                if(aktname == omaname)
+                {
+                    oma_vorhanden = true;
+                    break;//for ii
+                }
+            }
+            if(oma_vorhanden == true)
+            {
+                msg += "    ";
+                msg += aktname;
+                msg += "    OMA gefunden";
+                msg += "\n";
+            }else
+            {
+                msg += aktname;
+                msg += "\n";
+            }
+        }
+    }else
+    {
+        msg += "\n\n-----------------------\n";
+        msg += MatList.text();
+    }
+
+    ui->plainTextEdit_Meldungsfenster->setPlainText(msg);
     QApplication::restoreOverrideCursor();
 }
 
@@ -944,6 +995,32 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
             if(!kante_un.isEmpty()  && kadi_un == "0" && ist_ziffer(kante_un.at(0)))
             {
                 fehler_multiplexplatten_kante_ohne_kd = true;
+            }
+        }
+    }
+    //--------------------------------------MatList füllen:
+    for(uint i = 3; i<a.zeilenanzahl() ; i++)
+    {
+        text_zw stuecklistenzeile;
+        stuecklistenzeile.set_text(a.zeile(i),';');
+        QString material = stuecklistenzeile.at(1);
+        if(MatList.count() == 0)
+        {
+            MatList.add_hi(material);
+        }else
+        {
+            bool vorhanden = false;
+            for(uint ii=0;ii<MatList.count();ii++)
+            {
+                if(material == MatList.at(ii))
+                {
+                    vorhanden = true;
+                    break;//for ii
+                }
+            }
+            if(vorhanden == false)
+            {
+                MatList.add_hi(material);
             }
         }
     }

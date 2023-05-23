@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include "text_zeilenweise.h"
+#include "text_zw.h"
 #include "dialog_leere_unterurdner_entfernen.h"
 
 
@@ -63,6 +64,7 @@ private:
     text_zeilenweise elementnumern;
     bool fehler_elementnumern_doppelt;
     bool fehler_multiplexplatten_kante_ohne_kd;
+    text_zw MatList;
 
     //Pfade:
     QString verzeichnis_quelle, verzeichnis_ziel, verzeichnis_root, verzeichnis_root2;

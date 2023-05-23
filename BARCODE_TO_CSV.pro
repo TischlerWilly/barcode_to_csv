@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     text_zeilenweise.cpp \
     dialog_leere_unterurdner_entfernen.cpp \
-    bibiothek_oliver.cpp
+    bibiothek_oliver.cpp \
+    text_zw.cpp
 
 HEADERS  += mainwindow.h \
     text_zeilenweise.h \
     dialog_leere_unterurdner_entfernen.h \
     bibiothek_oliver.h \
+    text_zw.h \
     todo.h
 
 FORMS    += mainwindow.ui \
