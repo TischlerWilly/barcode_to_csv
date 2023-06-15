@@ -942,7 +942,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
     }
 
     //--------------------------------------Fehlersuche Elementnummern:
-    for(uint i = 3; i<a.zeilenanzahl() ; i++)
+    for(uint i = 2; i<a.zeilenanzahl() ; i++)
     {
         text_zeilenweise eintraege;
         eintraege.set_trennzeichen(';');
@@ -960,7 +960,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
         elementnumern.zeile_anhaengen(neue_nummer);
     }
     //--------------------------------------Fehlersuche Kantendicke bei Multiplexplatten:
-    for(uint i = 3; i<a.zeilenanzahl() ; i++)
+    for(uint i = 2; i<a.zeilenanzahl() ; i++)
     {
         text_zeilenweise eintraege;
         eintraege.set_trennzeichen(';');
@@ -999,7 +999,7 @@ QString MainWindow::barcode_to_csv(QString alter_inhalt)
         }
     }
     //--------------------------------------MatList füllen:
-    for(uint i = 3; i<a.zeilenanzahl() ; i++)
+    for(uint i = 2; i<a.zeilenanzahl() ; i++)
     {
         text_zw stuecklistenzeile;
         stuecklistenzeile.set_text(a.zeile(i),';');
